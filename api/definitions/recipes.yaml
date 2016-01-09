@@ -1,0 +1,598 @@
+swagger: '2.0'
+info:
+  title: Sample Recipes API
+  description: A simple recipe API using API Gateway and Lambda
+  version: "1.0"
+schemes:
+  - https
+produces:
+  - application/json
+paths:
+  /recipes:
+    post:
+      summary: Create a new recipe
+      description: |
+        Creates a new recipe
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: Recipe
+          in: body
+          description: New recipe details
+          schema:
+            $ref: '#/definitions/Recipe'
+      x-amazon-apigateway-integration:
+        type: aws
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:[ACCOUNT_ID]:function:aws-recipes-create-recipe/invocations
+        credentials: arn:aws:iam::[ACCOUNT_ID]:role/aws-recipes-lambda-invocation-role
+        httpMethod: POST
+        requestTemplates:
+          application/json: |
+            {
+              "userId" : "$context.identity.cognitoIdentityId"
+              "recipe" : $input.json('$')
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+          "BAD.*":
+            statusCode: "400"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+          "INT.*":
+            statusCode: "500"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+      responses:
+        200:
+          description: CreateRecipeResponse
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/CreateRecipeResponse'
+        400:
+          description: Bad request
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal error
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/Error'
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /recipes/{recipeId}:
+    get:
+      summary: Get recipe by id
+      description: Returns a recipe based on the given id
+      x-amazon-apigateway-auth:
+        type: aws_iam
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: recipeId
+          in: path
+          description: The unique identifier for a recipe
+          type: string
+      x-amazon-apigateway-integration:
+        type: aws
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:[ACCOUNT_ID]:function:aws-recipes-get-recipe/invocations
+        credentials: arn:aws:iam::*:user/*
+        httpMethod: POST
+        requestTemplates:
+          application/json: |
+            {
+              "userId" : "$context.identity.cognitoIdentityId"
+              "recipeId" : "$input.params('recipeId')"
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+          "Bad Request:.*":
+            statusCode: "400"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+          "Internal Failure:.*":
+            statusCode: "500"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+      responses:
+        200:
+          description: ListRecipesResponse
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/Recipes'
+        400:
+          description: Bad request
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal failure
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/Error'
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /login:
+    post:
+      summary: Login user
+      description: |
+        Verifies the given credentials against the user database and returns a set
+        of new temporary credentials
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: LoginUser
+          in: body
+          description: New user details.
+          schema:
+            $ref: '#/definitions/User'
+      x-amazon-apigateway-integration:
+        type: aws
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:[ACCOUNT_ID]:function:aws-recipes-login/invocations
+        credentials: arn:aws:iam::[ACCOUNT_ID]:role/aws-recipes-lambda-invocation-role
+        httpMethod: POST
+        requestTemplates:
+          application/json: |
+            {
+              "action" : "com.amazonaws.apigatewaydemo.action.LoginDemoAction",
+              "body" : $input.json('$')
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+          "BAD.*":
+            statusCode: "400"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+          "INT.*":
+            statusCode: "500"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+      responses:
+        200:
+          description: A new set of temporary credentials
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/LoginUserResponse'
+        400:
+          description: Bad request
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal error
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/Error'
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+  /users:
+    post:
+      summary: Creates a new user
+      description: |
+        Creates a new user
+      x-amazon-apigateway-auth:
+        type: aws_iam
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: User
+          in: body
+          description: New user details
+          schema:
+            $ref: '#/definitions/User'
+      x-amazon-apigateway-integration:
+        type: aws
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:[ACCOUNT_ID]:function:aws-recipes-create-user/invocations
+        credentials: arn:aws:iam::*:user/*
+        httpMethod: POST
+        requestTemplates:
+          application/json: |
+            {
+              "body" : $input.json('$')
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+          "BAD.*":
+            statusCode: "400"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+          "INT.*":
+            statusCode: "500"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+      responses:
+        200:
+          description: Create user response
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/CreateUserResponse'
+        400:
+          description: Bad request
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal error
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      summary: List users
+      description: Retrieve a list of users
+      x-amazon-apigateway-auth:
+        type: aws_iam
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-amazon-apigateway-integration:
+        type: aws
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:[ACCOUNT_ID]:function:aws-recipes-get-users/invocations
+        credentials: arn:aws:iam::*:user/*
+        httpMethod: POST
+        requestTemplates:
+          application/json: |
+            {
+              "body" : $input.json('$')
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+          "BAD.*":
+            statusCode: "400"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+          "INT.*":
+            statusCode: "500"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+      responses:
+        200:
+          description: ListUsersResponse
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/Users'
+        400:
+          description: Bad request
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal error
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+          schema:
+            $ref: '#/definitions/Error'
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - CORS
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          "default":
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods : "'*'"
+              method.response.header.Access-Control-Allow-Origin : "'*'"
+            responseTemplates:
+              application/json: |
+                {}
+      responses:
+        200:
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Headers:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Origin:
+              type: "string"
+definitions:
+  Users:
+    type: array
+    items:
+      $ref: User
+  User:
+    properties:
+      username:
+        type: string
+        description: A unique username for the user
+      password:
+        type: string
+        description: A password for the new user
+
+  CreateUserResponse:
+    properties:
+      username:
+        type: string
+        description: The username of the new user
+      identityId:
+        type: string
+        description: The unique identifier for the new user
+      token:
+        type: string
+        description: An OpenID token for the new user
+      credentials:
+        properties:
+          accessKey:
+            type: string
+            description: Temporary access key to sign requests
+          secretKey:
+            type: string
+            description: Temporary secret access key to sign requests
+          sessionToken:
+            type: string
+            description: Tempoarary session token
+          expiration:
+            type: integer
+            description: |
+              Expiration date of the temporary credentials in millis since 1/1/1970
+  LoginUserResponse:
+    properties:
+      identityId:
+        type: string
+        description: The unique identifier for the new user
+      token:
+        type: string
+        description: An OpenID token for the new user
+      credentials:
+        properties:
+          accessKey:
+            type: string
+            description: Temporary access key to sign requests
+          secretKey:
+            type: string
+            description: Temporary secret access key to sign requests
+          sessionToken:
+            type: string
+            description: Tempoarary session token
+          expiration:
+            type: integer
+            description: |
+              Expiration date of the temporary credentials in millis since 1/1/1970
+  User:
+    properties:
+      userId:
+        type: string
+      userName:
+        type: string
+
+
+  Recipe:
+    properties:
+      recipeId:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      ingredients:
+        type: array
+        items:
+          $ref: IngredientItem
+      instructions:
+        type: array
+        items:
+          $ref: Instruction
+  Ingredient:
+    type: object
+    properties:
+      ingredientId:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+  Instruction:
+    type: object
+    properties:
+      description:
+        type: string
+  Unit:
+    type: object
+    properties:
+      unitId:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+  IngredientItem:
+    type: object
+    properties:
+      ingredient:
+        $ref: Ingredient
+      quantity:
+        type: object
+        properties:
+          value:
+            type: number
+          unit:
+            $ref: Unit
+  Recipes:
+    type: array
+    items:
+      $ref: Recipe
+  CreateRecipeResponse:
+      type: object
+      properties:
+        recipe:
+          $ref: Recipe
+  Error:
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string

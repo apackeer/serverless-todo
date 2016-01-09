@@ -9,103 +9,162 @@ produces:
   - application/json
 paths:
   /recipes:
-    post:
-      summary: Create a new recipe
-      description: |
-        Creates a new recipe
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - name: Recipe
-          in: body
-          description: New recipe details
-          schema:
-            $ref: '#/definitions/Recipe'
-      x-amazon-apigateway-integration:
-        type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:[ACCOUNT_ID]:function:aws-recipes-create-recipe:${stageVariables.stage-id}/invocations
-        credentials: arn:aws:iam::[ACCOUNT_ID]:role/aws-recipes-lambda-invocation-role
-        httpMethod: POST
-        requestTemplates:
-          application/json: |
-            {
-              "userId" : "$context.identity.cognitoIdentityId"
-              "recipe" : $input.json('$')
-            }
+      get:
+        summary: List recipes
+        description: Returns all recipes
+        x-amazon-apigateway-auth:
+          type: aws_iam
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        parameters:
+          - name: recipeId
+            in: path
+            description: The unique identifier for a recipe
+            type: string
+        x-amazon-apigateway-integration:
+          type: aws
+          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:[ACCOUNT_ID]:function:aws-recipes-get-recipe:${stageVariables.stage-id}/invocations
+          credentials: arn:aws:iam::*:user/*
+          httpMethod: POST
+          requestTemplates:
+            application/json: |
+              {
+                "userId" : "$context.identity.cognitoIdentityId"
+              }
+          responses:
+            "default":
+              statusCode: "200"
+              responseParameters:
+                method.response.header.Access-Control-Allow-Origin : "'*'"
+            "Bad Request:.*":
+              statusCode: "400"
+              responseParameters:
+                method.response.header.Access-Control-Allow-Origin : "'*'"
+            "Internal Failure:.*":
+              statusCode: "500"
+              responseParameters:
+                method.response.header.Access-Control-Allow-Origin : "'*'"
         responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-          "BAD.*":
-            statusCode: "400"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-          "INT.*":
-            statusCode: "500"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-      responses:
-        200:
-          description: CreateRecipeResponse
-          headers:
-            Access-Control-Allow-Origin:
-              type: "string"
-          schema:
-            $ref: '#/definitions/CreateRecipeResponse'
-        400:
-          description: Bad request
-          headers:
-            Access-Control-Allow-Origin:
-              type: "string"
-          schema:
-            $ref: '#/definitions/Error'
-        500:
-          description: Internal error
-          headers:
-            Access-Control-Allow-Origin:
-              type: "string"
-          schema:
-            $ref: '#/definitions/Error'
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      tags:
-        - CORS
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
+          200:
+            description: ListRecipesResponse
+            headers:
+              Access-Control-Allow-Origin:
+                type: "string"
+            schema:
+              $ref: '#/definitions/Recipes'
+          400:
+            description: Bad request
+            headers:
+              Access-Control-Allow-Origin:
+                type: "string"
+            schema:
+              $ref: '#/definitions/Error'
+          500:
+            description: Internal failure
+            headers:
+              Access-Control-Allow-Origin:
+                type: "string"
+            schema:
+              $ref: '#/definitions/Error'
+      post:
+        summary: Create a new recipe
+        description: |
+          Creates a new recipe
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        parameters:
+          - name: Recipe
+            in: body
+            description: New recipe details
+            schema:
+              $ref: '#/definitions/Recipe'
+        x-amazon-apigateway-integration:
+          type: aws
+          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:[ACCOUNT_ID]:function:aws-recipes-create-recipe:${stageVariables.stage-id}/invocations
+          credentials: arn:aws:iam::[ACCOUNT_ID]:role/aws-recipes-lambda-invocation-role
+          httpMethod: POST
+          requestTemplates:
+            application/json: |
+              {
+                "userId" : "$context.identity.cognitoIdentityId"
+                "recipe" : $input.json('$')
+              }
+          responses:
+            "default":
+              statusCode: "200"
+              responseParameters:
+                method.response.header.Access-Control-Allow-Origin : "'*'"
+            "BAD.*":
+              statusCode: "400"
+              responseParameters:
+                method.response.header.Access-Control-Allow-Origin : "'*'"
+            "INT.*":
+              statusCode: "500"
+              responseParameters:
+                method.response.header.Access-Control-Allow-Origin : "'*'"
         responses:
-          "default":
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-              method.response.header.Access-Control-Allow-Methods : "'*'"
-              method.response.header.Access-Control-Allow-Origin : "'*'"
-            responseTemplates:
-              application/json: |
-                {}
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Headers:
-              type: "string"
-            Access-Control-Allow-Methods:
-              type: "string"
-            Access-Control-Allow-Origin:
-              type: "string"
+          200:
+            description: CreateRecipeResponse
+            headers:
+              Access-Control-Allow-Origin:
+                type: "string"
+            schema:
+              $ref: '#/definitions/CreateRecipeResponse'
+          400:
+            description: Bad request
+            headers:
+              Access-Control-Allow-Origin:
+                type: "string"
+            schema:
+              $ref: '#/definitions/Error'
+          500:
+            description: Internal error
+            headers:
+              Access-Control-Allow-Origin:
+                type: "string"
+            schema:
+              $ref: '#/definitions/Error'
+      options:
+        summary: CORS support
+        description: |
+          Enable CORS by returning correct headers
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        tags:
+          - CORS
+        x-amazon-apigateway-integration:
+          type: mock
+          requestTemplates:
+            application/json: |
+              {
+                "statusCode" : 200
+              }
+          responses:
+            "default":
+              statusCode: "200"
+              responseParameters:
+                method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                method.response.header.Access-Control-Allow-Methods : "'*'"
+                method.response.header.Access-Control-Allow-Origin : "'*'"
+              responseTemplates:
+                application/json: |
+                  {}
+        responses:
+          200:
+            description: Default response for CORS method
+            headers:
+              Access-Control-Allow-Headers:
+                type: "string"
+              Access-Control-Allow-Methods:
+                type: "string"
+              Access-Control-Allow-Origin:
+                type: "string"
   /recipes/{recipeId}:
     get:
       summary: Get recipe by id
@@ -147,12 +206,12 @@ paths:
               method.response.header.Access-Control-Allow-Origin : "'*'"
       responses:
         200:
-          description: ListRecipesResponse
+          description: A recipe
           headers:
             Access-Control-Allow-Origin:
               type: "string"
           schema:
-            $ref: '#/definitions/Recipes'
+            $ref: '#/definitions/Recipe'
         400:
           description: Bad request
           headers:

@@ -29,7 +29,7 @@ paths:
             type: "string"
         x-amazon-apigateway-integration:
           type: aws
-          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-recipe:${stageVariables.stage-id}/invocations
+          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-recipes:${stageVariables.stageId}/invocations
           credentials: arn:aws:iam::*:user/*
           httpMethod: POST
           requestTemplates:
@@ -89,7 +89,7 @@ paths:
               $ref: '#/definitions/Recipe'
         x-amazon-apigateway-integration:
           type: aws
-          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-create-recipe:${stageVariables.stage-id}/invocations
+          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-create-recipe:${stageVariables.stageId}/invocations
           credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
           httpMethod: POST
           requestTemplates:
@@ -154,7 +154,7 @@ paths:
             "default":
               statusCode: "200"
               responseParameters:
-                method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-amz-security-token'"
                 method.response.header.Access-Control-Allow-Methods : "'*'"
                 method.response.header.Access-Control-Allow-Origin : "'*'"
               responseTemplates:
@@ -187,7 +187,7 @@ paths:
           type: string
       x-amazon-apigateway-integration:
         type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-recipe:${stageVariables.stage-id}/invocations
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-recipe:${stageVariables.stageId}/invocations
         credentials: arn:aws:iam::*:user/*
         httpMethod: POST
         requestTemplates:
@@ -252,7 +252,7 @@ paths:
           "default":
             statusCode: "200"
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-amz-security-token'"
               method.response.header.Access-Control-Allow-Methods : "'*'"
               method.response.header.Access-Control-Allow-Origin : "'*'"
             responseTemplates:
@@ -286,7 +286,7 @@ paths:
             $ref: '#/definitions/User'
       x-amazon-apigateway-integration:
         type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-login:${stageVariables.stage-id}/invocations
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-login:${stageVariables.stageId}/invocations
         credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
         httpMethod: POST
         requestTemplates:
@@ -351,7 +351,7 @@ paths:
           "default":
             statusCode: "200"
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-amz-security-token'"
               method.response.header.Access-Control-Allow-Methods : "'*'"
               method.response.header.Access-Control-Allow-Origin : "'*'"
             responseTemplates:
@@ -386,7 +386,7 @@ paths:
             $ref: '#/definitions/User'
       x-amazon-apigateway-integration:
         type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-create-user:${stageVariables.stage-id}/invocations
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-create-user:${stageVariables.stageId}/invocations
         credentials: arn:aws:iam::*:user/*
         httpMethod: POST
         requestTemplates:
@@ -440,7 +440,7 @@ paths:
         - application/json
       x-amazon-apigateway-integration:
         type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-users:${stageVariables.stage-id}/invocations
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-users:${stageVariables.stageId}/invocations
         credentials: arn:aws:iam::*:user/*
         httpMethod: POST
         requestTemplates:
@@ -504,7 +504,7 @@ paths:
           "default":
             statusCode: "200"
             responseParameters:
-              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Headers : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-amz-security-token'"
               method.response.header.Access-Control-Allow-Methods : "'*'"
               method.response.header.Access-Control-Allow-Origin : "'*'"
             responseTemplates:

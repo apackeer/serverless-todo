@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 
 <html>
-
+<title>
+    AWS Recipes Demo - Ryan Green
+</title>
 <head>
-	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-MfvZlkHCEqatNoGiOXveE8FIwMzZg4W85qfrfIFBfYc= sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.12.min.js"></script>
@@ -23,63 +30,109 @@
     <script type="text/javascript" src="generated-js-sdk/apigClient.js"></script>
 </head>
 
-<body style="padding:10px;">
-</body>
- <h1>Cognito Test</h1>
- <div class="main">
-    <h2>Response 1</h2>
- 	<pre id="response1">
- 		<img src="http://orig12.deviantart.net/831e/f/2011/299/d/9/simple_loading_wheel_by_candirokz1-d4e1shx.gif" 		width="100" height="100"/>
- 	</pre>
-
-    <h2>Response 2</h2>
-    <pre id="response2">
-        <img src="http://orig12.deviantart.net/831e/f/2011/299/d/9/simple_loading_wheel_by_candirokz1-d4e1shx.gif"      width="100" height="100"/>
-    </pre>
- </div>
 <body>
+
+<h1>Recipes</h1>
+<div class="main">
+
+    <div class="row">
+        <div class="col-sm-8">
+
+            <h2>All Recipes</h2>
+            <pre id="response1">
+                <i class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
+            </pre>
+
+        </div>
+
+        <div class="col-sm-4">
+
+            <h2>Add Recipe</h2>
+
+            <form>
+                <fieldset class="form-group">
+                    <label for="recipe-name">Recipe Name</label>
+                    <input id="recipe-name" type="text" placeholder="Recipe Name"/>
+                </fieldset>
+                <fieldset class="form-group">
+                    <label for="recipe-instructions">Instructions</label>
+                    <textarea id="recipe-instructions" rows="5" cols="50">...instructions</textarea>
+                </fieldset>
+                <fieldset class="form-group">
+                    <input type="button" value="+ Add" class="btn btn-success" onclick="submitRecipe();" />
+                    <span id="create-status"></span>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+</body>
 
 <script type="text/javascript">
 
-	AWS.config.region = 'us-east-1'; // Region
-	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-    	IdentityPoolId: 'us-east-1:0582cc22-fe47-494e-b0b3-e5d2ca82e3ad',
-    	RoleArn: 'arn:aws:iam::975344022805:role/Cognito_aws_recipes_unauth_poolUnauth_Role'
-	});
+    AWS.config.region = 'us-east-1';
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'TODO: Add Cognito Identity Pool ID here!',
+        RoleArn: 'TODO: Add Cognito role ARN here!'
+    });
 
-	AWS.config.credentials.get(function(){
+    var apigClient;
 
-		var identityId = AWS.config.credentials.identityId;
-    	var accessKeyId = AWS.config.credentials.accessKeyId;
-    	var secretAccessKey = AWS.config.credentials.secretAccessKey;
-    	var sessionToken = AWS.config.credentials.sessionToken;
+    AWS.config.credentials.get(function(){
 
-		console.log("cognito identity id: " + identityId);
-		console.log("cognito access key: " + accessKeyId);
-		console.log("cognito secret key: " + secretAccessKey);
-		console.log("cognito session token: " + sessionToken);
+        var identityId = AWS.config.credentials.identityId;
+        var accessKeyId = AWS.config.credentials.accessKeyId;
+        var secretAccessKey = AWS.config.credentials.secretAccessKey;
+        var sessionToken = AWS.config.credentials.sessionToken;
 
-		var apigClient = apigClientFactory.newClient({
-    		 accessKey: accessKeyId,
-    		 secretKey: secretAccessKey,
-    		 sessionToken: sessionToken,
-    		region: 'us-east-1'
-		});
+        console.log("cognito identity id: " + identityId);
+        console.log("cognito access key: " + accessKeyId);
+        console.log("cognito secret key: " + secretAccessKey);
+        console.log("cognito session token: " + sessionToken);
 
-		var params = {};//{"search" : "foo"};
-		var body = {};
-		var additionalParams = {};
+        apigClient = apigClientFactory.newClient({
+            accessKey: accessKeyId,
+            secretKey: secretAccessKey,
+            sessionToken: sessionToken,
+            region: 'us-east-1'
+        });
 
-        apigClient.recipesGet(params, body, additionalParams)
-            .then(function(result){
-                console.log(result);
+        updateRecipes();
+    });
 
-                $('#response1').html(JSON.stringify(result.data, null, 2));
+    function updateRecipes() {
+        apigClient.recipesGet({}, {}, {})
+                .then(function(result) {
+                    console.log(result);
 
-            }).catch( function(result){
-                console.log(result);
-            });
+                    $('#response1').html(JSON.stringify(result.data, null, 2));
 
-	});
+                }).catch( function(result) {
+                    console.log(result);
+                });
+    }
 
+    function submitRecipe() {
+        $('#create-status').html('<i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i>');
+
+        var body = {
+            name : $('#recipe-name').val(),
+            instructions : $('#recipe-instructions').val()
+        };
+
+        apigClient.recipesPost({}, body, {})
+                .then(function(result) {
+                    console.log(result);
+
+                    $('#create-status').html('<i class="fa fa-check"></i>');
+
+                    updateRecipes();
+
+                }).catch(function(result) {
+                    console.error(result);
+                    $('#create-status').html('<i class="fa fa-exclamation-circle"></i>' + result.data.errorMessage);
+                });
+    }
 </script>

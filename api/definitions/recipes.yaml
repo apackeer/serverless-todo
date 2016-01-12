@@ -29,8 +29,9 @@ paths:
             type: "string"
         x-amazon-apigateway-integration:
           type: aws
-          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-recipes:${stageVariables.stageId}/invocations
-          credentials: arn:aws:iam::*:user/*
+          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-recipes/invocations
+          credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
+#          credentials: arn:aws:iam::*:user/*
           httpMethod: POST
           requestTemplates:
             application/json: |
@@ -77,6 +78,8 @@ paths:
         summary: Create a new recipe
         description: |
           Creates a new recipe
+        x-amazon-apigateway-auth:
+          type: aws_iam
         consumes:
           - application/json
         produces:
@@ -89,13 +92,13 @@ paths:
               $ref: '#/definitions/Recipe'
         x-amazon-apigateway-integration:
           type: aws
-          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-create-recipe:${stageVariables.stageId}/invocations
+          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-create-recipe/invocations
           credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
           httpMethod: POST
           requestTemplates:
             application/json: |
               {
-                "userId" : "$context.identity.cognitoIdentityId"
+                "userId" : "$context.identity.cognitoIdentityId",
                 "recipe" : $input.json('$')
               }
           responses:
@@ -103,11 +106,11 @@ paths:
               statusCode: "200"
               responseParameters:
                 method.response.header.Access-Control-Allow-Origin : "'*'"
-            "BAD.*":
+            "Bad Request:.*":
               statusCode: "400"
               responseParameters:
                 method.response.header.Access-Control-Allow-Origin : "'*'"
-            "INT.*":
+            "Internal Failure:.*":
               statusCode: "500"
               responseParameters:
                 method.response.header.Access-Control-Allow-Origin : "'*'"
@@ -187,8 +190,9 @@ paths:
           type: string
       x-amazon-apigateway-integration:
         type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-recipe:${stageVariables.stageId}/invocations
-        credentials: arn:aws:iam::*:user/*
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-recipe/invocations
+#        credentials: arn:aws:iam::*:user/*
+        credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
         httpMethod: POST
         requestTemplates:
           application/json: |
@@ -286,7 +290,7 @@ paths:
             $ref: '#/definitions/User'
       x-amazon-apigateway-integration:
         type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-login:${stageVariables.stageId}/invocations
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-login/invocations
         credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
         httpMethod: POST
         requestTemplates:
@@ -300,11 +304,11 @@ paths:
             statusCode: "200"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin : "'*'"
-          "BAD.*":
+          "Bad Request:.*":
             statusCode: "400"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin : "'*'"
-          "INT.*":
+          "Internal Failure:.*":
             statusCode: "500"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin : "'*'"
@@ -386,8 +390,9 @@ paths:
             $ref: '#/definitions/User'
       x-amazon-apigateway-integration:
         type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-create-user:${stageVariables.stageId}/invocations
-        credentials: arn:aws:iam::*:user/*
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-create-user/invocations
+#        credentials: arn:aws:iam::*:user/*
+        credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
         httpMethod: POST
         requestTemplates:
           application/json: |
@@ -399,11 +404,11 @@ paths:
             statusCode: "200"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin : "'*'"
-          "BAD.*":
+          "Bad Request:.*":
             statusCode: "400"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin : "'*'"
-          "INT.*":
+          "Internal Failure:.*":
             statusCode: "500"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin : "'*'"
@@ -440,8 +445,9 @@ paths:
         - application/json
       x-amazon-apigateway-integration:
         type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-users:${stageVariables.stageId}/invocations
-        credentials: arn:aws:iam::*:user/*
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-users/invocations
+#        credentials: arn:aws:iam::*:user/*
+        credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
         httpMethod: POST
         requestTemplates:
           application/json: |
@@ -453,11 +459,11 @@ paths:
             statusCode: "200"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin : "'*'"
-          "BAD.*":
+          "Bad Request:.*":
             statusCode: "400"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin : "'*'"
-          "INT.*":
+          "Internal Failure: .*":
             statusCode: "500"
             responseParameters:
               method.response.header.Access-Control-Allow-Origin : "'*'"

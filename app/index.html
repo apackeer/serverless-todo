@@ -40,21 +40,25 @@
         <div class="col-sm-8">
 
             <h2>All Recipes</h2>
-            <pre id="response1">
-
-                <i id="recipe-table-spinner" class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
+            <div id="response1">
 
                 <table id="recipe-table" class="table table-striped">
                     <thead>
                         <tr>
-                        <th>Name</th>
-                        <th>User</th>
-                        <th>Instructions</th>
+                            <th>Name</th>
+                            <th>User</th>
+                            <th>Instructions</th>
                         </tr>
                     </thead>
+
+                    <tr>
+                        <td colspan="3">
+                            <i id="recipe-table-spinner" class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
+                        </td>
+                    </tr>
                 </table>
 
-            </pre>
+            </div>
 
         </div>
 
@@ -118,27 +122,26 @@
 
     function updateRecipes() {
         apigClient.recipesGet({}, {}, {})
-                .then(function(result) {
-                    console.log(result);
-                    var spinner = $('#recipe-table-spinner');
-                    var table = $('#recipe-table');
+            .then(function(result) {
+                console.log(result);
+                var spinner = $('#recipe-table-spinner');
+                var table = $('#recipe-table');
 
-                    table.empty();
-                    spinner.hide();
+                table.children('tbody').empty()
 
-                    $.each(result.data, function(index, value) {
-                        var name = value.name;
-                        var instructions = value.instructions;
-                        var userId = value.userId;
+                $.each(result.data, function(index, value) {
+                    var name = value.name;
+                    var instructions = value.instructions;
+                    var userId = value.userId;
 
-                        var row = '<tr><td>' + name + '</td><td>' + userId + '</td><td>' + instructions + '</td></tr>';
+                    var row = '<tr><td>' + name + '</td><td>' + userId + '</td><td>' + instructions + '</td></tr>';
 
-                        table.append(row);
-                    });
-
-                }).catch( function(result) {
-                    console.log(result);
+                    table.append(row);
                 });
+
+            }).catch( function(result) {
+                console.log(result);
+            });
     }
 
     function submitRecipe() {
@@ -150,16 +153,16 @@
         };
 
         apigClient.recipesPost({}, body, {})
-                .then(function(result) {
-                    console.log(result);
+            .then(function(result) {
+                console.log(result);
 
-                    $('#create-status').html('<i class="fa fa-check"></i>');
+                $('#create-status').html('<i class="fa fa-check"></i>');
 
-                    updateRecipes();
+                updateRecipes();
 
-                }).catch(function(result) {
-                    console.error(result);
-                    $('#create-status').html('<i class="fa fa-exclamation-circle"></i>' + result.data.errorMessage);
-                });
+            }).catch(function(result) {
+                console.error(result);
+                $('#create-status').html('<i class="fa fa-exclamation-circle"></i>' + result.data.errorMessage);
+            });
     }
 </script>

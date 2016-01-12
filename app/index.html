@@ -120,6 +120,11 @@
         apigClient.recipesGet({}, {}, {})
                 .then(function(result) {
                     console.log(result);
+                    var spinner = $('#recipe-table-spinner');
+                    var table = $('#recipe-table');
+
+                    table.empty();
+                    spinner.hide();
 
                     $.each(result.data, function(index, value) {
                         var name = value.name;
@@ -128,10 +133,8 @@
 
                         var row = '<tr><td>' + name + '</td><td>' + userId + '</td><td>' + instructions + '</td></tr>';
 
-                        $('#recipe-table').append(row);
+                        table.append(row);
                     });
-
-                    $('#recipe-table-spinner').hide();
 
                 }).catch( function(result) {
                     console.log(result);

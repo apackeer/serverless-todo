@@ -8,6 +8,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <!--<meta name="google-signin-scope" content="ryang2006@gmail.com">-->
+    <meta name="google-signin-client_id" content="593729434903-77sms2la6q035tv6pd3tiahck8n3uhgs.apps.googleusercontent.com">
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
@@ -15,6 +17,7 @@
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.12.min.js"></script>
 
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script type="text/javascript" src="generated-js-sdk/lib/axios/dist/axios.standalone.js"></script>
     <script type="text/javascript" src="generated-js-sdk/lib/CryptoJS/rollups/hmac-sha256.js"></script>
     <script type="text/javascript" src="generated-js-sdk/lib/CryptoJS/rollups/sha256.js"></script>
@@ -32,7 +35,9 @@
 
 <body>
 
-<div class="main container">
+<div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+
+<div class="main container" style="display:none;">
     <h1>Recipes</h1>
 
     <div class="row">
@@ -86,39 +91,72 @@
     </div>
 
 </div>
+
 </body>
 
-<script type="text/javascript">
+<script>
+    var identityPoolId = 'TODO: add identity pool ID here';
+    var region = 'us-east-1';
 
-    AWS.config.region = 'us-east-1';
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'TODO: Add Cognito Identity Pool ID here!',
-        RoleArn: 'TODO: Add Cognito role ARN here!'
-    });
-
+    // todo: remove globals
     var apigClient;
+    var authId;
+    var authName;
 
-    AWS.config.credentials.get(function(){
+    function onSignIn(googleUser) {
+        // Useful data for your client-side scripts:
+        var profile = googleUser.getBasicProfile();
 
-        var identityId = AWS.config.credentials.identityId;
-        var accessKeyId = AWS.config.credentials.accessKeyId;
-        var secretAccessKey = AWS.config.credentials.secretAccessKey;
-        var sessionToken = AWS.config.credentials.sessionToken;
+        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+        console.log("Name: " + profile.getName());
+        console.log("Image URL: " + profile.getImageUrl());
+        console.log("Email: " + profile.getEmail());
+        console.log("Google User: " + JSON.stringify(profile));
 
-        console.log("cognito identity id: " + identityId);
-        console.log("cognito access key: " + accessKeyId);
-        console.log("cognito secret key: " + secretAccessKey);
-        console.log("cognito session token: " + sessionToken);
+        // The ID token you need to pass to your backend:
+        var id_token = googleUser.getAuthResponse().id_token;
 
-        apigClient = apigClientFactory.newClient({
-            accessKey: accessKeyId,
-            secretKey: secretAccessKey,
-            sessionToken: sessionToken,
-            region: 'us-east-1'
+        console.log("ID Token: " + id_token);
+
+        authId = profile.getId();
+        authEmail = profile.getEmail();
+        authName = profile.getName();
+
+        // todo: associate user with cognito id, save in ddb
+
+        AWS.config.region = region;
+        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId,
+            Logins: {
+                'accounts.google.com': id_token
+            }
         });
 
-        updateRecipes();
-    });
+        AWS.config.credentials.get(function(){
+
+            var identityId = AWS.config.credentials.identityId;
+            var accessKeyId = AWS.config.credentials.accessKeyId;
+            var secretAccessKey = AWS.config.credentials.secretAccessKey;
+            var sessionToken = AWS.config.credentials.sessionToken;
+
+            console.log("cognito identity id: " + identityId);
+            console.log("cognito access key: " + accessKeyId);
+            console.log("cognito secret key: " + secretAccessKey);
+            console.log("cognito session token: " + sessionToken);
+
+            apigClient = apigClientFactory.newClient({
+                accessKey: accessKeyId,
+                secretKey: secretAccessKey,
+                sessionToken: sessionToken,
+                region: region
+            });
+
+            $(".main").show();
+
+            updateRecipes();
+        });
+
+    };
 
     function updateRecipes() {
         apigClient.recipesGet({}, {}, {})

@@ -50,7 +50,6 @@
                 <table id="todo-table" class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Name</th>
                             <th>User</th>
                             <th>TODO</th>
                         </tr>
@@ -172,7 +171,7 @@
                     var instructions = value.instructions;
                     var userId = value.userId;
 
-                    var row = '<tr><td>' + name + '</td><td>' + userId + '</td><td>' + instructions + '</td></tr>';
+                    var row = '<tr><td>' + userId + '</td><td>' + name + '</td></tr>';
 
                     table.append(row);
                 });

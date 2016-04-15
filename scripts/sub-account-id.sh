@@ -1,9 +1,9 @@
 #!/bin/bash
 
-ACCOUNT_ID="ENTER YOUR AWS ACCOUNT ID HERE"
+ACCOUNT_ID="TODO add your account id here"
 
 EXP="s/ACCOUNT_ID/$ACCOUNT_ID/g"
-cp api/definitions/recipes.yaml api/definitions/recipes.final.yaml
+cp api/definitions/todo.yaml api/definitions/todo.final.yaml
 
-CMD="perl -pi -e $EXP ./api/definitions/recipes.final.yaml"
+CMD="perl -pi -e $EXP ./api/definitions/todo.final.yaml"
 exec $CMD;

@@ -2,7 +2,7 @@
 
 <html>
 <title>
-    AWS Recipes Demo - Ryan Green
+    Serverless TODO Demo - Ryan Green
 </title>
 <head>
     <meta charset="utf-8">
@@ -38,27 +38,27 @@
 <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
 
 <div class="main container" style="display:none;">
-    <h1>Recipes</h1>
+    <h1>Servless TODO with API Gateway and Lambda</h1>
 
     <div class="row">
 
         <div class="col-sm-8">
 
-            <h2>All Recipes</h2>
+            <h2>All TODOs</h2>
             <div id="response1">
 
-                <table id="recipe-table" class="table table-striped">
+                <table id="todo-table" class="table table-striped">
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>User</th>
-                            <th>Instructions</th>
+                            <th>TODO</th>
                         </tr>
                     </thead>
 
                     <tr>
                         <td colspan="3">
-                            <i id="recipe-table-spinner" class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
+                            <i id="todo-table-spinner" class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
                         </td>
                     </tr>
                 </table>
@@ -69,19 +69,19 @@
 
         <div class="col-sm-4">
 
-            <h2>Add Recipe</h2>
+            <h2>Add TODO</h2>
 
             <form>
                 <fieldset class="form-group">
-                    <label for="recipe-name">Recipe Name</label>
-                    <input id="recipe-name" type="text" placeholder="Recipe Name"/>
+                    <!--<label for="todo-name">TODO Name</label>-->
+                    <input id="todo-name" type="text" placeholder="What to do?"/>
                 </fieldset>
+                <!--<fieldset class="form-group">-->
+                    <!--<label for="todo-instructions">Instructions</label>-->
+                    <!--<textarea id="todo-instructions" rows="5" cols="50">...instructions</textarea>-->
+                <!--</fieldset>-->
                 <fieldset class="form-group">
-                    <label for="recipe-instructions">Instructions</label>
-                    <textarea id="recipe-instructions" rows="5" cols="50">...instructions</textarea>
-                </fieldset>
-                <fieldset class="form-group">
-                    <input type="button" value="+ Add" class="btn btn-success" onclick="submitRecipe();" />
+                    <input type="button" value="+ Add" class="btn btn-success" onclick="submittodo();" />
                     <span id="create-status"></span>
                 </fieldset>
             </form>
@@ -95,7 +95,7 @@
 </body>
 
 <script>
-    var identityPoolId = 'TODO: add identity pool ID here';
+    var identityPoolId = 'us-east-1:0582cc22-fe47-494e-b0b3-e5d2ca82e3ad';
     var region = 'us-east-1';
 
     // todo: remove globals
@@ -153,17 +153,17 @@
 
             $(".main").show();
 
-            updateRecipes();
+            update();
         });
 
     };
 
-    function updateRecipes() {
-        apigClient.recipesGet({}, {}, {})
+    function update() {
+        apigClient.todosGet({}, {}, {})
             .then(function(result) {
                 console.log(result);
-                var spinner = $('#recipe-table-spinner');
-                var table = $('#recipe-table');
+                var spinner = $('#todo-table-spinner');
+                var table = $('#todo-table');
 
                 table.children('tbody').empty()
 
@@ -182,21 +182,20 @@
             });
     }
 
-    function submitRecipe() {
+    function submittodo() {
         $('#create-status').html('<i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i>');
 
         var body = {
-            name : $('#recipe-name').val(),
-            instructions : $('#recipe-instructions').val()
+            name : $('#todo-name').val()
         };
 
-        apigClient.recipesPost({}, body, {})
+        apigClient.todosPost({}, body, {})
             .then(function(result) {
                 console.log(result);
 
                 $('#create-status').html('<i class="fa fa-check"></i>');
 
-                updateRecipes();
+                update();
 
             }).catch(function(result) {
                 console.error(result);

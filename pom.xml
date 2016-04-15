@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.ryang</groupId>
-    <artifactId>simple-recipes</artifactId>
+    <artifactId>serverless-todo</artifactId>
     <version>0.1-SNAPSHOT</version>
 
     <dependencies>
@@ -211,7 +211,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.ryang.recipes.ImportApiCommand</mainClass>
+                            <mainClass>org.ryang.todos.ImportApiCommand</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -229,9 +229,9 @@
     </licenses>
 
     <scm>
-        <url>scm:git:git@github.com:rpgreen/aws-recipes.git</url>
-        <connection>scm:git:git@github.com:rpgreen/aws-recipes.git</connection>
-        <developerConnection>scm:git:git@github.com:rpgreen/aws-recipes.git</developerConnection>
+        <url>scm:git:git@github.com:rpgreen/serverless-todo.git</url>
+        <connection>scm:git:git@github.com:rpgreen/serverless-todo.git</connection>
+        <developerConnection>scm:git:git@github.com:rpgreen/serverless-todo.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 

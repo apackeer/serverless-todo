@@ -1,17 +1,17 @@
 swagger: '2.0'
 info:
-  title: Sample Recipes API
-  description: A simple recipe API using API Gateway and Lambda
+  title: Sample TODO API
+  description: A simple TODO API using API Gateway and Lambda
   version: "1.0"
 schemes:
   - https
 produces:
   - application/json
 paths:
-  /recipes:
+  /todos:
       get:
-        summary: List recipes
-        description: Returns all recipes
+        summary: List todos
+        description: Returns all todos
         x-amazon-apigateway-auth:
           type: aws_iam
         consumes:
@@ -19,9 +19,9 @@ paths:
         produces:
           - application/json
         parameters:
-          - name: recipeId
+          - name: todoId
             in: path
-            description: The unique identifier for a recipe
+            description: The unique identifier for a todo
             type: string
           - name: "search"
             in: "query"
@@ -29,8 +29,8 @@ paths:
             type: "string"
         x-amazon-apigateway-integration:
           type: aws
-          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-recipes/invocations
-          credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
+          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:serverless-todo-get-todos/invocations
+          credentials: arn:aws:iam::ACCOUNT_ID:role/serverless-todo-lambda-invocation-role
 #          credentials: arn:aws:iam::*:user/*
           httpMethod: POST
           requestTemplates:
@@ -54,12 +54,12 @@ paths:
                 method.response.header.Access-Control-Allow-Origin : "'*'"
         responses:
           200:
-            description: ListRecipesResponse
+            description: ListTodosResponse
             headers:
               Access-Control-Allow-Origin:
                 type: "string"
             schema:
-              $ref: '#/definitions/Recipes'
+              $ref: '#/definitions/Todos'
           400:
             description: Bad request
             headers:
@@ -75,9 +75,9 @@ paths:
             schema:
               $ref: '#/definitions/Error'
       post:
-        summary: Create a new recipe
+        summary: Create a new todo
         description: |
-          Creates a new recipe
+          Creates a new todo
         x-amazon-apigateway-auth:
           type: aws_iam
         consumes:
@@ -85,21 +85,21 @@ paths:
         produces:
           - application/json
         parameters:
-          - name: Recipe
+          - name: todo
             in: body
-            description: New recipe details
+            description: New todo details
             schema:
-              $ref: '#/definitions/Recipe'
+              $ref: '#/definitions/Todo'
         x-amazon-apigateway-integration:
           type: aws
-          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-create-recipe/invocations
-          credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
+          uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:serverless-todo-create-todo/invocations
+          credentials: arn:aws:iam::ACCOUNT_ID:role/serverless-todo-lambda-invocation-role
           httpMethod: POST
           requestTemplates:
             application/json: |
               {
                 "userId" : "$context.identity.cognitoIdentityId",
-                "recipe" : $input.json('$')
+                "todo" : $input.json('$')
               }
           responses:
             "default":
@@ -116,12 +116,12 @@ paths:
                 method.response.header.Access-Control-Allow-Origin : "'*'"
         responses:
           200:
-            description: CreateRecipeResponse
+            description: CreateTodoResponse
             headers:
               Access-Control-Allow-Origin:
                 type: "string"
             schema:
-              $ref: '#/definitions/CreateRecipeResponse'
+              $ref: '#/definitions/CreateTodoResponse'
           400:
             description: Bad request
             headers:
@@ -173,10 +173,10 @@ paths:
                 type: "string"
               Access-Control-Allow-Origin:
                 type: "string"
-  /recipes/{recipeId}:
+  /todos/{todoId}:
     get:
-      summary: Get recipe by id
-      description: Returns a recipe based on the given id
+      summary: Get todo by id
+      description: Returns a todo based on the given id
       x-amazon-apigateway-auth:
         type: aws_iam
       consumes:
@@ -184,21 +184,21 @@ paths:
       produces:
         - application/json
       parameters:
-        - name: recipeId
+        - name: todoId
           in: path
-          description: The unique identifier for a recipe
+          description: The unique identifier for a todo
           type: string
       x-amazon-apigateway-integration:
         type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-recipe/invocations
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:serverless-todo-get-todo/invocations
 #        credentials: arn:aws:iam::*:user/*
-        credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
+        credentials: arn:aws:iam::ACCOUNT_ID:role/serverless-todo-lambda-invocation-role
         httpMethod: POST
         requestTemplates:
           application/json: |
             {
               "userId" : "$context.identity.cognitoIdentityId"
-              "recipeId" : "$input.params('recipeId')"
+              "todoId" : "$input.params('todoId')"
             }
         responses:
           "default":
@@ -215,12 +215,12 @@ paths:
               method.response.header.Access-Control-Allow-Origin : "'*'"
       responses:
         200:
-          description: A recipe
+          description: A todo
           headers:
             Access-Control-Allow-Origin:
               type: "string"
           schema:
-            $ref: '#/definitions/Recipe'
+            $ref: '#/definitions/Todo'
         400:
           description: Bad request
           headers:
@@ -290,8 +290,8 @@ paths:
             $ref: '#/definitions/User'
       x-amazon-apigateway-integration:
         type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-login/invocations
-        credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:serverless-todo-login/invocations
+        credentials: arn:aws:iam::ACCOUNT_ID:role/serverless-todo-lambda-invocation-role
         httpMethod: POST
         requestTemplates:
           application/json: |
@@ -390,9 +390,9 @@ paths:
             $ref: '#/definitions/User'
       x-amazon-apigateway-integration:
         type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-create-user/invocations
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:serverless-todo-create-user/invocations
 #        credentials: arn:aws:iam::*:user/*
-        credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
+        credentials: arn:aws:iam::ACCOUNT_ID:role/serverless-todo-lambda-invocation-role
         httpMethod: POST
         requestTemplates:
           application/json: |
@@ -445,9 +445,9 @@ paths:
         - application/json
       x-amazon-apigateway-integration:
         type: aws
-        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:aws-recipes-get-users/invocations
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:ACCOUNT_ID:function:serverless-todo-get-users/invocations
 #        credentials: arn:aws:iam::*:user/*
-        credentials: arn:aws:iam::ACCOUNT_ID:role/aws-recipes-lambda-invocation-role
+        credentials: arn:aws:iam::ACCOUNT_ID:role/serverless-todo-lambda-invocation-role
         httpMethod: POST
         requestTemplates:
           application/json: |
@@ -595,68 +595,23 @@ definitions:
         type: string
       userName:
         type: string
-
-
-  Recipe:
+  Todo:
     properties:
-      recipeId:
+      todoId:
         type: string
       name:
         type: string
       description:
         type: string
-      ingredients:
-        type: array
-        items:
-          $ref: IngredientItem
-      instructions:
-        type: array
-        items:
-          $ref: Instruction
-  Ingredient:
-    type: object
-    properties:
-      ingredientId:
-        type: string
-      name:
-        type: string
-      description:
-        type: string
-  Instruction:
-    type: object
-    properties:
-      description:
-        type: string
-  Unit:
-    type: object
-    properties:
-      unitId:
-        type: string
-      name:
-        type: string
-      description:
-        type: string
-  IngredientItem:
-    type: object
-    properties:
-      ingredient:
-        $ref: Ingredient
-      quantity:
-        type: object
-        properties:
-          value:
-            type: number
-          unit:
-            $ref: Unit
-  Recipes:
+  Todos:
     type: array
     items:
-      $ref: Recipe
-  CreateRecipeResponse:
+      $ref: Todo
+  CreateTodoResponse:
       type: object
       properties:
-        recipe:
-          $ref: Recipe
+        todo:
+          $ref: Todo
   Error:
     properties:
       code:

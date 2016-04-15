@@ -52,7 +52,7 @@ apigClientFactory.newClient = function (config) {
     }
 
     
-    var endpoint = 'https://0qx2ozyjt8.execute-api.us-east-1.amazonaws.com/prod';
+    var endpoint = 'https://6s5323b0ia.execute-api.us-east-1.amazonaws.com/dev';
     var parser = document.createElement('a');
     parser.href = endpoint;
 
@@ -127,93 +127,93 @@ apigClientFactory.newClient = function (config) {
     };
     
     
-    apigClient.recipesGet = function (params, body, additionalParams) {
+    apigClient.todosGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
         apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
         
-        var recipesGetRequest = {
+        var todosGetRequest = {
             verb: 'get'.toUpperCase(),
-            path: pathComponent + uritemplate('/recipes').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            path: pathComponent + uritemplate('/todos').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
             //queryParams: apiGateway.core.utils.parseParametersToObject(params, ['search', ]),
             body: body
         };
         
         
-        return apiGatewayClient.makeRequest(recipesGetRequest, authType, additionalParams, config.apiKey);
+        return apiGatewayClient.makeRequest(todosGetRequest, authType, additionalParams, config.apiKey);
     };
     
     
-    apigClient.recipesPost = function (params, body, additionalParams) {
+    apigClient.todosPost = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
         apiGateway.core.utils.assertParametersDefined(params, ['body'], ['body']);
         
-        var recipesPostRequest = {
+        var todosPostRequest = {
             verb: 'post'.toUpperCase(),
-            path: pathComponent + uritemplate('/recipes').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            path: pathComponent + uritemplate('/todos').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
             queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
             body: body
         };
         
         
-        return apiGatewayClient.makeRequest(recipesPostRequest, authType, additionalParams, config.apiKey);
+        return apiGatewayClient.makeRequest(todosPostRequest, authType, additionalParams, config.apiKey);
     };
     
     
-    apigClient.recipesOptions = function (params, body, additionalParams) {
+    apigClient.todosOptions = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
         apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
         
-        var recipesOptionsRequest = {
+        var todosOptionsRequest = {
             verb: 'options'.toUpperCase(),
-            path: pathComponent + uritemplate('/recipes').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            path: pathComponent + uritemplate('/todos').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
             queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
             body: body
         };
         
         
-        return apiGatewayClient.makeRequest(recipesOptionsRequest, authType, additionalParams, config.apiKey);
+        return apiGatewayClient.makeRequest(todosOptionsRequest, authType, additionalParams, config.apiKey);
     };
     
     
-    apigClient.recipesRecipeIdGet = function (params, body, additionalParams) {
+    apigClient.todostodoIdGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, ['recipeId'], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['todoId'], ['body']);
         
-        var recipesRecipeIdGetRequest = {
+        var todostodoIdGetRequest = {
             verb: 'get'.toUpperCase(),
-            path: pathComponent + uritemplate('/recipes/{recipeId}').expand(apiGateway.core.utils.parseParametersToObject(params, ['recipeId'])),
+            path: pathComponent + uritemplate('/todos/{todoId}').expand(apiGateway.core.utils.parseParametersToObject(params, ['todoId'])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
             queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
             body: body
         };
         
         
-        return apiGatewayClient.makeRequest(recipesRecipeIdGetRequest, authType, additionalParams, config.apiKey);
+        return apiGatewayClient.makeRequest(todostodoIdGetRequest, authType, additionalParams, config.apiKey);
     };
     
     
-    apigClient.recipesRecipeIdOptions = function (params, body, additionalParams) {
+    apigClient.todostodoIdOptions = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
         apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
         
-        var recipesRecipeIdOptionsRequest = {
+        var todostodoIdOptionsRequest = {
             verb: 'options'.toUpperCase(),
-            path: pathComponent + uritemplate('/recipes/{recipeId}').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            path: pathComponent + uritemplate('/todos/{todoId}').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
             queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
             body: body
         };
         
         
-        return apiGatewayClient.makeRequest(recipesRecipeIdOptionsRequest, authType, additionalParams, config.apiKey);
+        return apiGatewayClient.makeRequest(todostodoIdOptionsRequest, authType, additionalParams, config.apiKey);
     };
     
     

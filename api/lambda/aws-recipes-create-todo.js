@@ -5,21 +5,19 @@ var crypto = require('crypto');
 
 exports.handler = function(event, context) {
 
-    console.log("Create recipe event: " + JSON.stringify(event));
+    console.log("Create todo event: " + JSON.stringify(event));
 
-    if (!event.recipe || !event.recipe.name || !event.recipe.instructions) {
-        context.fail("Bad Request: Invalid recipe");
+    if (!event.todo || !event.todo.name) {
+        context.fail("Bad Request: Invalid todo");
     }
 
-    ensureTable("aws-recipes", function() {
+    ensureTable("serverless-todo", function() {
         var params = {
-            TableName : "aws-recipes",
+            TableName : "serverless-todo",
             Item: {
                 userId : event.userId,
-                recipeId : crypto.randomBytes(8).toString('hex'),
-                name : event.recipe.name,
-                instructions : event.recipe.instructions
-            }
+                todoId : crypto.randomBytes(8).toString('hex'),
+                name : event.todo.name}
         };
 
         console.log(params);
@@ -42,11 +40,11 @@ function ensureTable(tableName, callback) {
             var params = {
                 TableName : tableName,
                 KeySchema: [
-                    { AttributeName: "recipeId", KeyType: "HASH"},  //Partition key
+                    { AttributeName: "todoId", KeyType: "HASH"},  //Partition key
                     { AttributeName: "name", KeyType: "RANGE" }  //Sort key
                 ],
                 AttributeDefinitions: [
-                    { AttributeName: "recipeId", AttributeType: "S" },
+                    { AttributeName: "todoId", AttributeType: "S" },
                     { AttributeName: "name", AttributeType: "S" }
                 ],
                 ProvisionedThroughput: {

@@ -4,12 +4,12 @@ var dynamodb = new doc.DynamoDB();
 
 exports.handler = function(event, context) {
 
-    ensureTable("aws-recipes", function() {
+    ensureTable("serverless-todo", function() {
         var userId = event.userId;
         var searchQuery = event.search;
 
         var params = {
-            TableName : "aws-recipes",
+            TableName : "serverless-todo",
             Limit : 100
         }
 
@@ -28,11 +28,11 @@ function ensureTable(tableName, callback) {
             var params = {
                 TableName : tableName,
                 KeySchema: [
-                    { AttributeName: "recipeId", KeyType: "HASH"},  //Partition key
+                    { AttributeName: "todoId", KeyType: "HASH"},  //Partition key
                     { AttributeName: "name", KeyType: "RANGE" }  //Sort key
                 ],
                 AttributeDefinitions: [
-                    { AttributeName: "recipeId", AttributeType: "S" },
+                    { AttributeName: "todoId", AttributeType: "S" },
                     { AttributeName: "name", AttributeType: "S" }
                 ],
                 ProvisionedThroughput: {
